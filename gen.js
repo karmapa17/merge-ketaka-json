@@ -63,7 +63,7 @@ kde.open(kdb,function(err,_db){
 	db.get([["filecontents"],["filenames"]],{recursive:true},function(data){
 		filecontents=data[0];
 		filenames=data[1];
-		var lst=fs.readFileSync(lstfn,"utf8").split(/\r?\n/);
+		var lst=fs.readFileSync(lstfn,"utf8").split(/\r?\n/).trim();
 		lst.map(doconvert);
 		sortByFilePageOffset();
 		var outfn=lstfn.replace(".lst","")+".json";
