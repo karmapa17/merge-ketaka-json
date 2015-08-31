@@ -39,6 +39,13 @@ var filterApproved=function(ljfn,rows) {
 							from:oldtext, to:row.doc.payload.text //replace "from" with "to" at "offset"
 							});
 	});
+	
+	json=json.filter(function(row,idx){
+		var next=rows[idx+1];
+		if (!next)return true;
+		if (row.offset===next.offset && row.from===next.from && row.to===next.to)return false;
+		return true;
+	});
 }
 var doconvert=function(file){
 	var ljfn=file.substr(file.length-17,12).replace(/\\/,"/").replace("/","/lj").replace("-","_")+".xml";
