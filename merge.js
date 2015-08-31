@@ -3,7 +3,7 @@ var debug=true;
 var trimpage=true;
 
 
-var jsonfn=process.argv[2]||"ketaka84.json";  //default json filename
+var jsonfn=process.argv[2]||"ketaka.json";  //default json filename
 if (jsonfn.indexOf(".json")==-1)jsonfn+=".json";
 var json=require("./"+jsonfn);
 

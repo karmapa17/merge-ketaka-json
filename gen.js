@@ -7,7 +7,7 @@
 */
 var fs=require("fs");
 var kde=require("ksana-database");
-var lstfn=process.argv[2]||"ketaka84.lst";
+var lstfn=process.argv[2]||"ketaka.lst";
 var kdb=process.argv[3]||"jiangkangyur201504";
 
 
@@ -32,7 +32,7 @@ var filterApproved=function(ljfn,rows) {
 		if (state!=="approve") return;
 		var pageid=parseInt(row.doc.pageid);
 		var oldtext=fetchText(fidx,pageid-1,row.doc.start,row.doc.len);
-
+		
 		json.push({f:fidx,p:pageid-1, //for sorting only
 							file:ljfn,page: segnames[pageid-1], //human readible file name and pb id
 							offset:row.doc.start, 
@@ -40,12 +40,6 @@ var filterApproved=function(ljfn,rows) {
 							});
 	});
 	
-	json=json.filter(function(row,idx){
-		var next=rows[idx+1];
-		if (!next)return true;
-		if (row.offset===next.offset && row.from===next.from && row.to===next.to)return false;
-		return true;
-	});
 }
 var doconvert=function(file){
 	var ljfn=file.substr(file.length-17,12).replace(/\\/,"/").replace("/","/lj").replace("-","_")+".xml";
@@ -55,14 +49,20 @@ var doconvert=function(file){
 }
 
 var sortByFilePageOffset=function(){
-	json=json.sort(function(a,b){
+	var out=json.sort(function(a,b){
 		//assuming offset<65536, total page <4096
 		//reverse order offset for easier merge
 		return (a.f*4096*65536+a.p*65536+ (65536-a.offset)) -(b.f*4096*65536+b.p*65536+ (65536-b.offset));
 	}).map(function(item){
 		//remove f and p, not required after sort
 		return {file:item.file,page:item.page,offset:item.offset,from:item.from,to:item.to};
+	}).filter(function(item,idx){
+		var next=json[idx+1];
+		if (!next) return true;
+		if (item.offset===next.offset) return false;
+		return true;
 	});
+	json=out;
 }
 
 kde.open(kdb,function(err,_db){
