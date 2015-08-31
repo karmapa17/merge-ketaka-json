@@ -7,8 +7,8 @@
 */
 var fs=require("fs");
 var kde=require("ksana-database");
-var lstfn="ketaka84.lst"||process.argv[2];
-var kdb="jiangkangyur201504"||process.argv[3];
+var lstfn=process.argv[2]||"ketaka84.lst";
+var kdb=process.argv[3]||"jiangkangyur201504";
 
 
 var db=null
