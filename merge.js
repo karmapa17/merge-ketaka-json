@@ -1,5 +1,7 @@
 var diffmode=true;    // true for manual check, false for production
 var debug=true;
+var trimpage=true;
+
 
 var jsonfn=process.argv[2]||"ketaka84.json";  //default json filename
 if (jsonfn.indexOf(".json")==-1)jsonfn+=".json";
@@ -24,17 +26,20 @@ var errormerge=function(item){
 }
 
 var loadPage=function(filecontent) {
-	var page={},lastidx=0,lastid="_";
+	var pages={},lastidx=0,lastid="_";
 	filecontent.replace(/<pb id="(.+?)"\/>\n?/g,function(m,m1,idx){
 		if (lastidx===0) {
-			page[lastid]=filecontent.substr(0,idx);
+			pages[lastid]=filecontent.substr(0,idx);
 		}
-		page[lastid]=filecontent.substring(lastidx,idx);
+		pages[lastid]=filecontent.substring(lastidx,idx);
 		lastidx=idx+m.length;
 		lastid=m1;
 	});
-	page[lastid]=filecontent.substring(lastidx).trim();	
-	return page;
+	pages[lastid]=filecontent.substring(lastidx).trim();
+
+	if (trimpage) for (var i in pages) pages[i]=pages[i].trim();
+
+	return pages;
 }
 var fetchText=function(pagecontent,offset,len) {
 	var realoff=getOffsetOmitTag(pagecontent,offset);
