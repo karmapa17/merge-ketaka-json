@@ -83,7 +83,7 @@ var inserterror=function(offset,err) {
 var createnewfilecontent=function() {
 	var s="";
 	for (var i in pages) {
-		if (i!=="_") s+='<pb id="'+i+'"/>\n';
+		if (i!=="_") s+='\n<pb id="'+i+'"/>\n';
 		s+=pages[i];
 	}
 	return s;
