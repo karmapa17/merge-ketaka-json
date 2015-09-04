@@ -104,6 +104,9 @@ var trymerge=function(item){
 		pages=loadPage(fs.readFileSync(source_xml_folder+item.file,"utf8"));
 	}
 	currentpage=item.page;
+	if (!pages[item.page]) {
+		throw item.page +" does not exists in file "+item.file;
+	}
 	var t=fetchText(pages[item.page],item.offset,item.from.length);
 
 	if (!t) {
