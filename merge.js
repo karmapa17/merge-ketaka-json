@@ -106,7 +106,7 @@ var trymerge=function(item){
 	currentpage=item.page;
 	if (!pages[item.page]) {
 		throw item.page +" does not exists in file "+item.file;
-	}
+	} 
 	var t=fetchText(pages[item.page],item.offset,item.from.length);
 
 	if (!t) {
