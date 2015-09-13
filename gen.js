@@ -26,6 +26,7 @@ var fetchText=function(f,seg,s,l){
 
 var filterApproved=function(ljfn,rows) {
 	var fidx=filenames.indexOf(ljfn);
+//	if(fidx==-1) throw "not found"+ljfn;
 	var segnames=db.getFileSegNames(fidx);
 	rows.forEach(function(row){
 		var state=row.doc.payload.state;
@@ -42,8 +43,12 @@ var filterApproved=function(ljfn,rows) {
 	
 }
 var doconvert=function(file){
-	var ljfn=file.substr(file.length-17,12).replace(/\\/,"/").replace("/","/lj").replace("-","_")+".xml";
-	var rows=require("./"+file).rows;
+	file=file.replace(/\\/g,"/");
+	var idx=16;
+	if (file.indexOf(".")==file.length-5) idx=17; // extension is .json
+	var ljfn=file.substr(file.length-idx,12).replace("/","/lj").replace("-","_")+".xml";
+	console.log(file)
+	var rows=JSON.parse(fs.readFileSync(file,"utf8")).rows;
 	totalmarkup+=rows.length;
 	filterApproved(ljfn,rows);
 }
