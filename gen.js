@@ -26,6 +26,9 @@ var fetchText=function(f,seg,s,l){
 
 var filterApproved=function(ljfn,rows) {
 	var fidx=filenames.indexOf(ljfn);
+	if (fidx===-1) {
+		throw "file not found in kdb:"+ljfn;
+	}
 	var segnames=db.getFileSegNames(fidx);
 	rows.forEach(function(row){
 		var state=row.doc.payload.state;
@@ -42,7 +45,11 @@ var filterApproved=function(ljfn,rows) {
 	
 }
 var doconvert=function(file){
-	var ljfn=file.substr(file.length-17,12).replace(/\\/,"/").replace("/","/lj").replace("-","_")+".xml";
+	file=file.replace(/\\/,"/");
+	var i=file.lastIndexOf("/");
+	i=file.lastIndexOf("/",i-1);
+
+	var ljfn=file.substr(i+1).replace("/","/lj").replace("-","_").replace(".json",".xml");
 	var rows=require("./"+file).rows;
 	totalmarkup+=rows.length;
 	filterApproved(ljfn,rows);
