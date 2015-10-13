@@ -5,12 +5,15 @@
 
   node gen lst_file kdbfn 
 */
+var member_approved=true;  //成員 被 approved
+var chief_suggested=false;   //chief 自己加的suggestion
+
 var fs=require("fs");
 var kde=require("ksana-database");
 var lstfn=process.argv[2]||"ketaka.lst";
 var kdb=process.argv[3]||"jiangkangyur201504";
-
-
+var chieffn="chief.tsv";
+var xmlfn2chief={};
 var db=null
   ,filenames=null //filenames in KDB
   ,totalmarkup=0
@@ -19,9 +22,27 @@ var db=null
 
 if (lstfn.indexOf(".lst")==-1) lstfn+=".lst";
 
+(function() {
+	var lines=fs.readFileSync(chieffn,"utf8").split(/\r?\n/);
+	for (var i=0;i<lines.length;i++) {
+		var fields=lines[i].split("\t");
+		xmlfn2chief[fields[0]]=fields[1];
+	}
+})();
+
 var fetchText=function(f,seg,s,l){
 	var str=filecontents[f][seg];
 	return str.substr(s,l);
+}
+
+
+var check=function(chief,payload) {
+	var approved=(payload.state==="approve") ;
+	var suggestedByChief=(payload.author===chief) && (payload.type=="suggest")
+
+	if (member_approved && chief_suggested) return approved || suggestedByChief;
+	if (member_approved) return approved;
+	if (chief_suggested) return suggestedByChief;
 }
 
 var filterApproved=function(ljfn,rows) {
@@ -29,10 +50,15 @@ var filterApproved=function(ljfn,rows) {
 	if (fidx===-1) {
 		throw "file not found in kdb:"+ljfn;
 	}
+	var chief = xmlfn2chief[ljfn];
+	if (!chief.trim()) {
+		throw ljfn+" has no chief proreader, check "+chieffn;
+	}
+
 	var segnames=db.getFileSegNames(fidx);
 	rows.forEach(function(row){
-		var state=row.doc.payload.state;
-		if (state!=="approve") return;
+		var pass=check(chief,row.doc.payload);
+		if (!pass) return;
 		var pageid=parseInt(row.doc.pageid);
 		var oldtext=fetchText(fidx,pageid-1,row.doc.start,row.doc.len);
 		
@@ -50,6 +76,7 @@ var doconvert=function(file){
 	i=file.lastIndexOf("/",i-1);
 
 	var ljfn=file.substr(i+1).replace("/","/lj").replace("-","_").replace(".json",".xml");
+	if (!fs.existsSync(file)) return;
 	var rows=require("./"+file).rows;
 	totalmarkup+=rows.length;
 	filterApproved(ljfn,rows);
