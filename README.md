@@ -4,6 +4,10 @@ Merge Ketaka JSON into Jiangkangyur XML
 
 [Slide](https://docs.google.com/presentation/d/1s11_T_H4JPHgV17RGpGAUmMRnmG-jSm-fu-uFuXXdlI/edit?usp=sharing)
 
+[video1](https://www.youtube.com/watch?v=R1VN-DJf3Do)
+[video2](https://www.youtube.com/watch?v=A2k74Civ9Ks)
+[vidoe3](https://www.youtube.com/watch?v=4ZvYlH5TTSk)
+[video4](https://www.youtube.com/watch?v=GKCmkwuD0xc)
 first step
 =====
 input: ketaka_json_lst and jiangkangyur.kdb (used by ketaka)
